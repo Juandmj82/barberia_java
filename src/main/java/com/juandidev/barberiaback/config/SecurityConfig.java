@@ -45,25 +45,27 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .headers(headers -> headers.frameOptions().disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/signup", "/api/auth/signin").permitAll()
-                        .requestMatchers("/api/health").permitAll()
+                        // ✅ CORRECCIÓN: Quitamos el prefijo /api de los endpoints públicos
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/auth/signup", "/auth/signin").permitAll()
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Endpoints públicos para servicios y barberos (para clientes)
+
+                        // Endpoints públicos para servicios, barberos y disponibilidad
                         .requestMatchers("/services", "/services/{id}").permitAll()
                         .requestMatchers("/services/price-range", "/services/max-duration/**").permitAll()
                         .requestMatchers("/barbers", "/barbers/{id}").permitAll()
                         .requestMatchers("/barbers/available-at", "/barbers/specialty/**", "/barbers/experience/**").permitAll()
-                        // Endpoints públicos para horarios (para consultas de disponibilidad)
                         .requestMatchers("/schedules/barber/*/active").permitAll()
                         .requestMatchers("/schedules/available").permitAll()
                         .requestMatchers("/schedules/barber/*/available").permitAll()
                         .requestMatchers("/schedules/day/**").permitAll()
-                        // Endpoints públicos para disponibilidad (cálculo de slots)
                         .requestMatchers("/availability/**").permitAll()
+
                         // Endpoints de citas protegidos por autorización granular en servicio
                         .requestMatchers("/appointments/**").authenticated()
-                        // Endpoints administrativos
+
+                        // Endpoints administrativos (asumimos que estos sí usan el prefijo /api si el controlador está así)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/barber/**").hasAnyRole("ADMIN", "BARBER")
                         .anyRequest().authenticated()
@@ -84,7 +86,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
