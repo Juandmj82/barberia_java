@@ -1,0 +1,915 @@
+{
+  "info": {
+    "name": "Barbería API",
+    "description": "Colección completa de endpoints para la API de Barbería",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "clientId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "barberId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "serviceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "appointmentId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación",
+      "item": [
+        {
+          "name": "Registrar Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    console.log(\"Token guardado: \" + jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"juan_cliente\",\n  \"email\": \"juan@email.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"phoneNumber\": \"+34612345678\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "signup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Iniciar Sesión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    console.log(\"Token guardado: \" + jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"juan_cliente\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signin",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "signin"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Servicios",
+      "item": [
+        {
+          "name": "Obtener Todos los Servicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Servicio por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Servicio (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"serviceId\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Corte Clásico\",\n  \"description\": \"Corte de cabello tradicional\",\n  \"duration\": 30,\n  \"price\": 25.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Servicio (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Corte Clásico Premium\",\n  \"description\": \"Corte de cabello tradicional con acabado premium\",\n  \"duration\": 40,\n  \"price\": 30.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "{{serviceId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Servicio (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "{{serviceId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar por Rango de Precio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services/price-range?minPrice=20&maxPrice=40",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "price-range"],
+              "query": [
+                {
+                  "key": "minPrice",
+                  "value": "20"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "40"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar por Duración Máxima",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services/max-duration/45",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "max-duration", "45"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Barberos",
+      "item": [
+        {
+          "name": "Obtener Barberos Disponibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/barbers",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Todos los Barberos (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/barbers/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers", "all"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Barbero por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/barbers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Barbero (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"barberId\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 3,\n  \"specialty\": \"Cortes modernos y barba\",\n  \"yearsOfExperience\": 5,\n  \"bio\": \"Especialista en cortes modernos con más de 5 años de experiencia\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/barbers",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Barbero (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"specialty\": \"Cortes clásicos y modernos\",\n  \"yearsOfExperience\": 6,\n  \"bio\": \"Especialista con 6 años de experiencia\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/barbers/{{barberId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers", "{{barberId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Disponibilidad",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/barbers/{{barberId}}/availability?available=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers", "{{barberId}}", "availability"],
+              "query": [
+                {
+                  "key": "available",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Barberos por Especialidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/barbers/specialty/Cortes clásicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["barbers", "specialty", "Cortes clásicos"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Horarios",
+      "item": [
+        {
+          "name": "Obtener Horarios de Barbero",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/schedules/barber/{{barberId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["schedules", "barber", "{{barberId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Horarios Activos (Público)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/schedules/barber/{{barberId}}/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["schedules", "barber", "{{barberId}}", "active"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Horario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"barberId\": {{barberId}},\n  \"dayOfWeek\": \"MONDAY\",\n  \"startTime\": \"09:00:00\",\n  \"endTime\": \"18:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/schedules",
+              "host": ["{{baseUrl}}"],
+              "path": ["schedules"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Barberos Disponibles en Día/Hora",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/schedules/available?dayOfWeek=MONDAY&time=10:00:00",
+              "host": ["{{baseUrl}}"],
+              "path": ["schedules", "available"],
+              "query": [
+                {
+                  "key": "dayOfWeek",
+                  "value": "MONDAY"
+                },
+                {
+                  "key": "time",
+                  "value": "10:00:00"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verificar Disponibilidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/schedules/barber/{{barberId}}/available?dayOfWeek=MONDAY&time=10:00:00",
+              "host": ["{{baseUrl}}"],
+              "path": ["schedules", "barber", "{{barberId}}", "available"],
+              "query": [
+                {
+                  "key": "dayOfWeek",
+                  "value": "MONDAY"
+                },
+                {
+                  "key": "time",
+                  "value": "10:00:00"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Disponibilidad",
+      "item": [
+        {
+          "name": "Slots Disponibles de Barbero",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/availability/barber/{{barberId}}?date=2024-12-15&duration=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["availability", "barber", "{{barberId}}"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-12-15"
+                },
+                {
+                  "key": "duration",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Barberos Disponibles en Fecha/Hora",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/availability/barbers?date=2024-12-15&time=10:00:00&duration=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["availability", "barbers"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-12-15"
+                },
+                {
+                  "key": "time",
+                  "value": "10:00:00"
+                },
+                {
+                  "key": "duration",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verificar Slot Específico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/availability/barber/{{barberId}}/slot?date=2024-12-15&startTime=10:00:00&duration=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["availability", "barber", "{{barberId}}", "slot"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-12-15"
+                },
+                {
+                  "key": "startTime",
+                  "value": "10:00:00"
+                },
+                {
+                  "key": "duration",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resumen de Disponibilidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/availability/barber/{{barberId}}/summary?startDate=2024-12-15&endDate=2024-12-20&duration=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["availability", "barber", "{{barberId}}", "summary"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-12-15"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-20"
+                },
+                {
+                  "key": "duration",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Próximos Slots Disponibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/availability/barber/{{barberId}}/next-available?duration=30&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["availability", "barber", "{{barberId}}", "next-available"],
+              "query": [
+                {
+                  "key": "duration",
+                  "value": "30"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Citas",
+      "item": [
+        {
+          "name": "Obtener Todas las Citas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Cita por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Cita",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"appointmentId\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": {{clientId}},\n  \"barberId\": {{barberId}},\n  \"serviceId\": {{serviceId}},\n  \"startTime\": \"2024-12-15T10:00:00\",\n  \"notes\": \"Corte corto por favor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Cita",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"barberId\": {{barberId}},\n  \"serviceId\": {{serviceId}},\n  \"startTime\": \"2024-12-15T11:00:00\",\n  \"notes\": \"Cambio de horario\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Cita",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Estado de Cita",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}/status?status=CONFIRMED",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointmentId}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "CONFIRMED"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Citas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/my-appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "my-appointments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Citas de Hoy",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/today",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "today"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Health & Test",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Público",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test/public",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "public"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Protegido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/test/protected",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "protected"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/test/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "admin"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
